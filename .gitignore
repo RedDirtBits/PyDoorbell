@@ -1,5 +1,6 @@
 /bin
 /lib
-/config.py
-/pyvenv.cfg
-/.micropythonrc
+config.py
+pyvenv.cfg
+*.micropythonrc
+*.vscode
