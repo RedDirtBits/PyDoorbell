@@ -3,5 +3,6 @@
 config.py
 pyvenv.cfg
 ampy.txt
+esptool.txt
 *.micropythonrc
 *.vscode
