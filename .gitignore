@@ -2,5 +2,6 @@
 /lib
 config.py
 pyvenv.cfg
+ampy.txt
 *.micropythonrc
 *.vscode
