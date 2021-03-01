@@ -5,64 +5,50 @@ import json
 import config
 from machine import Pin
 
-# TODO:
-# - Handle No WiFi
-# - Handle failed response or message send
-# - Wait state/time between doorbell press
-# - Debounce the switch
-# - Set pin for physical relay that will trigger physical doorbell
-# - Can it be differentiated between someone pushing the button and activating a motion sensor?
-
-# - Set up two functions baseed on net connectivity
-#     - If net connected, trigger pushover and physical doorbell
-#     - Use while loop to check connectivity.  If connected, send both.
-#     - If not connected, call function to ring only physical doorbell then try to connect
-#         - If connection made, call function governing net connection actions
-
-# Is a method needed to prevent multiple triggers if the button is held for a long period of time?
-
 # This will be the trigger to the Pushover notification
 doorbell_button = Pin(33, Pin.IN)
 
 # This triggers the physical doorbell chime
 relay = Pin(26, Pin.OUT)
 
-def pushover(msg, title):
 
+def pushover(msg, title):
     """
      Forms the Pushover notification
     """
-    
+
     pushover_url = 'https://api.pushover.net/1/messages.json'
     pushover_headers = {'content-type': 'application/json'}
-    
+
     pushover_data = json.dumps({
         'token': config.PUSHOVER_TOKEN,
         'user': config.PUSHOVER_USER,
         'title': title,
         'message': msg
-        })
-    
-    push = urequests.post(url = pushover_url,
-                          headers = pushover_headers,
+    })
+
+    push = urequests.post(url=pushover_url,
+                          headers=pushover_headers,
                           data=pushover_data)
-    
+
     pushover_response = json.loads(push.text)
     pushover_status_code = pushover_response['status']
-    
+
     if pushover_status_code == 1:
-        
+
         print('Notification Sent')
-        
+
     else:
-        
-        print('Notification failed to send.  Status Code {}'.format(pushover_status_code))
-    
+
+        print('Notification failed to send.  Status Code {}'.format(
+            pushover_status_code))
+
+
 # Connect to WiFi
 wifi.wifi_connect()
 
 while True:
-    
+
     # When there is a WiFi connection and button is pressed
     if doorbell_button.value() == 0 and wifi.connection_status():
 
@@ -77,12 +63,12 @@ while True:
 
         # De-energize the relay
         relay.value(0)
-        
+
         # I am not fond of all the sleep cycles but it is the easiest way
         # Pause the loop in case someone holds the button for a really long time.
         time.sleep(3)
 
-    # When there is no WiFi connection and the button is pressed    
+    # When there is no WiFi connection and the button is pressed
     elif doorbell_button.value() == 0 and not wifi.connection_status():
 
         # Energize the physical relay to activate the interior doorbell ringer
@@ -90,10 +76,9 @@ while True:
 
         # Hold the relay high for one second
         time.sleep(1)
-        
+
         # De-energize the relay
         relay.value(0)
-        
+
         # Sleep delay to reduce multiple consecutive rings
         time.sleep(3)
-
