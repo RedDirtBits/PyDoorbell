@@ -19,7 +19,7 @@ def wifi_connect():
 
         wlan.active(True)
         wlan.config(dhcp_hostname=hostname)
-        wlan.connect(config.SSIDA2, config.WIFI_PASSWD)
+        wlan.connect(config.SSID2, config.WIFI_PASSWD)
         count += 1
         time.sleep(2)
 
